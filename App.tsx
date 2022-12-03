@@ -1,6 +1,8 @@
+import 'react-native-gesture-handler';
+import 'expo-dev-client';
+
 import React from 'react';
 import SwitcherStack from './src/navigation/SwitcherStack';
-
 import { Provider } from 'react-redux';
 import { store } from './src/redux/store';
 

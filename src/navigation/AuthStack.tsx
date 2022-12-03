@@ -24,10 +24,11 @@ const AuthStack = () => {
                 name='Signup'
                 component={Signup}
                 options={{ 
-                    headerTitle: () => 
+                    headerTitle: (props) => 
                     <StackHeader 
-                        Icon={(props) => <MaterialIcons {...props} name='assignment' size={29} />}
+                        Icon={() => <MaterialIcons name='assignment' size={29} />}
                         text="MyTodos"
+                        {...props}
                     />
                  }}
             />

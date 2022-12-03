@@ -3,6 +3,7 @@ import React, {useState, useEffect} from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 import DateTimePicker  from '@react-native-community/datetimepicker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { 
   View, 
@@ -18,6 +19,9 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { KeyboardAvoidingView } from 'react-native';
 import { ImagePickerOptions } from 'expo-image-picker';
 import { matureDate } from '../../constants/utilities';
+import { RootState, store } from '../../redux/store';
+import { addUserToUsersList, updateUserInfo, userInterface } from '../../redux/slices/usersSlice';
+import { useSelector } from 'react-redux';
 
 
 const Signup = ({route}) => {
@@ -36,13 +40,14 @@ const Signup = ({route}) => {
   const [error, setError] = useState(false);
   const [message, setMessage] = useState('');
 
+  const { users } = useSelector((state: RootState) => state.user);
+
 
   useEffect(() => {
     (async () => {
         await MediaLibrary.requestPermissionsAsync();
     })();
-    setMaxDate(matureDate)
-    console.log(userBirthday);
+    setMaxDate(matureDate);
   }, [fullName, userBirthday]);
 
 
@@ -61,10 +66,14 @@ const Signup = ({route}) => {
         const url = result.assets[0].uri;
         console.log(url);
         setUserImageURL(url);
+        if(error) {
+          setError(false);
+        }
       }
         
     } catch (error) {
-      console.log(error);
+      setError(true);
+      setMessage(error);
     }
   }
 
@@ -78,6 +87,15 @@ const Signup = ({route}) => {
     });
     
     setUserBirthday(birthday);
+    if(error) {
+      setError(false);
+    }
+  }
+  const handleNameChange = (e) => {
+    setFullName(e)
+    if(error) {
+      setError(false);
+    }
   }
 
   const signup = async () => {
@@ -96,7 +114,22 @@ const Signup = ({route}) => {
       setMessage('Profile is required');
       return;
     }
-
+    store.dispatch(updateUserInfo({}))
+    const userInfo:userInterface = {
+      id: id,
+      name: fullName,
+      birthday: userBirthday,
+      imageURL: userImageURL,
+    };
+    // update list
+    store.dispatch(addUserToUsersList(userInfo));
+    // set updated list as the new list in storage
+    await AsyncStorage.setItem('@users', JSON.stringify(users));
+    
+    await AsyncStorage.setItem('@currentUser', JSON.stringify(userInfo));
+    store.dispatch(updateUserInfo(userInfo));
+    
+    console.log(users);
   }
   return (
     <View style={styles.container}>
@@ -121,7 +154,7 @@ const Signup = ({route}) => {
           <TextInput 
             placeholder='FullName...'
             keyboardType='default'
-            onChangeText={(e) => setFullName(e)}
+            onChangeText={(e) => handleNameChange(e)}
             value={fullName}
             style={styles.input}
           />

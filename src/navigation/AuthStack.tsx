@@ -1,7 +1,9 @@
 import React from 'react';
 import Login from '../screens/Login';
 import Signup from '../screens/Signup';
+import StackHeader from '../components/StackHeader';
 
+import { MaterialIcons } from '@expo/vector-icons';
 import { createStackNavigator } from '@react-navigation/stack';
 
 
@@ -21,6 +23,13 @@ const AuthStack = () => {
             <StackAuth.Screen
                 name='Signup'
                 component={Signup}
+                options={{ 
+                    headerTitle: () => 
+                    <StackHeader 
+                        Icon={(props) => <MaterialIcons {...props} name='assignment' size={29} />}
+                        text="MyTodos"
+                    />
+                 }}
             />
         </StackAuth.Navigator>
     );

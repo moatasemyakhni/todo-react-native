@@ -4,11 +4,9 @@ import StackHeader from '../components/StackHeader';
 import DrawerContent from '../components/DrawerContent';
 
 import { MaterialIcons } from '@expo/vector-icons';
-import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
 const MainStack = () => {
-    const StackMain = createStackNavigator();
     const Drawer = createDrawerNavigator();
     return (
         <Drawer.Navigator drawerContent={(props) => <DrawerContent {...props} />}>

@@ -1,0 +1,2 @@
+// return today's date but 13 years ago
+export const matureDate = (): string => new Date().toLocaleDateString().replace((new Date().getFullYear() % 100).toString(), (new Date().getFullYear()-13).toString());

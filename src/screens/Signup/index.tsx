@@ -19,6 +19,7 @@ import { KeyboardAvoidingView } from 'react-native';
 import { ImagePickerOptions } from 'expo-image-picker';
 import { matureDate } from '../../constants/utilities';
 
+
 const Signup = ({route}) => {
   const {
     id,
@@ -26,24 +27,27 @@ const Signup = ({route}) => {
     birthday,
     imageURL
   } = route.params;
-  const [enable, setEnable] = useState(false);
+  
   const [fullName, setFullName] = useState(name);
-  const [userBirthday, setBirthday] = useState(birthday);
+  const [userBirthday, setUserBirthday] = useState(birthday);
   const [userImageURL, setUserImageURL] = useState(imageURL);
   const [maxDate, setMaxDate] = useState('');
   const [show, setShow] = useState(false);
+  const [error, setError] = useState(false);
+  const [message, setMessage] = useState('');
+
+
   useEffect(() => {
     (async () => {
         await MediaLibrary.requestPermissionsAsync();
     })();
-    setEnable([fullName, userBirthday].every(Boolean));
     setMaxDate(matureDate)
-}, [fullName, userBirthday]);
+    console.log(userBirthday);
+  }, [fullName, userBirthday]);
 
 
   const pickImage = async () => {
     try {
-      setEnable(false);
       const options: ImagePickerOptions = {
         mediaTypes:  ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
@@ -63,17 +67,36 @@ const Signup = ({route}) => {
       console.log(error);
     }
   }
-  const handleNameChange = (e) => {
-    setFullName(e)
-    
-    console.log(fullName);
-  }
-  const handleShowDate = () => {
-    setShow(true);
-  }
+
   const handleDateChange = (e) => {
     setShow(false);
-    console.log(new Date(e['nativeEvent'].timestamp).toLocaleDateString());
+
+    const birthday = new Date(e['nativeEvent'].timestamp).toLocaleDateString('en-US', {
+      year: 'numeric', 
+      month: 'numeric', 
+      day: 'numeric'
+    });
+    
+    setUserBirthday(birthday);
+  }
+
+  const signup = async () => {
+    if(!fullName) {
+      setError(true);
+      setMessage('Name is required');
+      return;
+    }
+    if(!userBirthday) {
+      setError(true);
+      setMessage('Birthday is required');
+      return;
+    }
+    if(!imageURL) {
+      setError(true);
+      setMessage('Profile is required');
+      return;
+    }
+
   }
   return (
     <View style={styles.container}>
@@ -98,13 +121,13 @@ const Signup = ({route}) => {
           <TextInput 
             placeholder='FullName...'
             keyboardType='default'
-            onChangeText={handleNameChange}
+            onChangeText={(e) => setFullName(e)}
             value={fullName}
             style={styles.input}
           />
           <Button 
-            onPress={handleShowDate} 
-            text={`Birthday: ${birthday}` || "Choose birthday Date"}
+            onPress={() => setShow(true)} 
+            text={`Birthday: ${userBirthday}` || "Choose birthday Date"}
             styleContainer={[styles.btnDateContainer]}
             styleText={[styles.btnDateText]}
           />
@@ -124,7 +147,14 @@ const Signup = ({route}) => {
             text='Signup'
             styleContainer={[styles.btn]}
             styleText={[styles.btnText]}
+            onPress={signup}
           />
+          {
+            error?
+              <Text style={styles.error}> {message} </Text>
+            :
+            null
+          }
         </ScrollView>
       </KeyboardAvoidingView>
     </View>

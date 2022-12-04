@@ -2,6 +2,7 @@ import Button from '../../components/Button';
 import React, {useState, useEffect} from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
+import ErrorMessage from '../../components/ErrorMessage';
 import DateTimePicker  from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -13,15 +14,19 @@ import {
   ScrollView, 
   TouchableOpacity, 
 } from 'react-native';
+import { 
+  userInterface,
+  updateUserInfo, 
+  addUserToUsersList, 
+} from '../../redux/slices/usersSlice';
 import { styles } from './style';
 import { Platform } from 'react-native';
+import { useSelector } from 'react-redux';
 import { MaterialIcons } from '@expo/vector-icons';
 import { KeyboardAvoidingView } from 'react-native';
+import { RootState, store } from '../../redux/store';
 import { ImagePickerOptions } from 'expo-image-picker';
 import { matureDate } from '../../constants/utilities';
-import { RootState, store } from '../../redux/store';
-import { addUserToUsersList, updateUserInfo, userInterface } from '../../redux/slices/usersSlice';
-import { useSelector } from 'react-redux';
 
 
 const Signup = ({route}) => {
@@ -60,11 +65,10 @@ const Signup = ({route}) => {
         exif: false,
         quality: 1,
         aspect: [4, 3],
-    }
+      }
       const result = await ImagePicker.launchImageLibraryAsync(options);
       if(!result.canceled) {
         const url = result.assets[0].uri;
-        console.log(url);
         setUserImageURL(url);
         if(error) {
           setError(false);
@@ -91,6 +95,7 @@ const Signup = ({route}) => {
       setError(false);
     }
   }
+
   const handleNameChange = (e) => {
     setFullName(e)
     if(error) {
@@ -114,7 +119,6 @@ const Signup = ({route}) => {
       setMessage('Profile is required');
       return;
     }
-    store.dispatch(updateUserInfo({}))
     const userInfo:userInterface = {
       id: id,
       name: fullName,
@@ -128,8 +132,6 @@ const Signup = ({route}) => {
     
     await AsyncStorage.setItem('@currentUser', JSON.stringify(userInfo));
     store.dispatch(updateUserInfo(userInfo));
-    
-    console.log(users);
   }
   return (
     <View style={styles.container}>
@@ -182,16 +184,11 @@ const Signup = ({route}) => {
             styleText={[styles.btnText]}
             onPress={signup}
           />
-          {
-            error?
-              <Text style={styles.error}> {message} </Text>
-            :
-            null
-          }
+          <ErrorMessage error={error} message={message} />
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
-  )
+  );
 }
 
 export default Signup;

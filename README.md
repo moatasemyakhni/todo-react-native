@@ -47,3 +47,42 @@ MyTodos has no backend, it uses a [fake api](https://my-json-server.typicode.com
     ```sh
     npm install
     ```
+3. include in app.json
+    ```json
+    ...
+
+    "plugins": [
+      [
+        "react-native-fbsdk-next",
+        {
+          "appID": "xxxxxxxx",
+          "clientToken": "xxxxxxxxxxxxxx",
+          "displayName": "your-fb-project-name",
+          "scheme": "fbxxxxxxxx",
+          "advertiserIDCollectionEnabled": false,
+          "autoLogAppEventsEnabled": false,
+          "isAutoInitEnabled": true,
+          "iosUserTrackingPermission": "This identifier will be used to deliver personalized ads to you."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to change profile picture."
+        }
+      ]
+    ],
+
+    ...
+    "android": {
+        ...
+        "package": "com.packagename.todos"
+        ...
+    }
+    ...
+    "extra": {
+      "eas": {
+        "projectId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx"
+      }
+      ...
+    ```

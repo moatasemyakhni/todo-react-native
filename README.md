@@ -10,6 +10,18 @@ MyTodos logs user using [facebook login api](https://developers.facebook.com/doc
 
 MyTodos has no backend, it uses a [fake api](https://my-json-server.typicode.com/moatasemyakhni/mockjson/db) generated using [mockend](https://mockend.com/).
 <br><br>
+<details>
+    <summary> Implementation</summary> -->
+| Login | Signup| Setting
+| -----------------| -----| ----|
+| <img src="./readme/Login.jpg" height="500" width="250" alt="RunCode" />| <img src="./readme/Signup.jpg" height="500" width="250" alt="RunCode" />|<img src="./readme/Setting.jpg" height="500" width="250" alt="RunCode" />|
+
+| Todo List | Details
+| -----------------| -----|
+| <img src="./readme/Todo.jpg" height="500" width="250" alt="RunCode" />| <img src="./readme/Details.jpg" height="500" width="250" alt="RunCode" />|
+
+</details>
+<br><br>
 
 >## Prerequisites
 

@@ -3,9 +3,9 @@ import Card from '../../components/Card';
 import TodoModal from '../../components/TodoModal';
 
 import { styles } from './style';
-import { View } from 'react-native';
 import { FlatList } from 'react-native';
 import { useSelector } from 'react-redux';
+import { View, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
 import { RootState, store } from '../../redux/store';
 import { todoInterface, updateTodos } from '../../redux/slices/todosSlice';
@@ -31,13 +31,14 @@ const Todo = () => {
   useEffect(() => {
     // it will be executed only one time 
     if(todos.length === 0) {
+      // fake api meant for testing
       fetch('https://my-json-server.typicode.com/moatasemyakhni/mockjson/db')
         .then((response) => response.json())
         .then((data) => {
           const response: Array<todoInterface> = data.todos;
           store.dispatch(updateTodos(response));
         })
-        .catch(err => console.log(err));
+        .catch(err => Alert.alert(err));
     }
   }, [])
   return (
@@ -54,7 +55,13 @@ const Todo = () => {
       <FlatList 
         data={todos}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({item}) => <Card title={item.title} date={item.date} key={item.id.toString()} onPress={() => handleModal(item)} />}
+        renderItem={
+          ({item}) => <Card 
+            title={item.title} 
+            date={item.date} 
+            key={item.id.toString()} 
+            onPress={() => handleModal(item)} 
+        />}
       />
     </View>
   );

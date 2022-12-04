@@ -1,15 +1,15 @@
 import 'expo-dev-client';
 import Button from '../../components/Button';
-import React, { useCallback, FC } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import EmptyState from '../../components/EmptyState';
+import React, { useCallback, FC, useState } from 'react';
+import ErrorMessage from '../../components/ErrorMessage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { 
   Text, 
   View, 
   Image,
-  StyleSheet, 
   ScrollView, 
 } from 'react-native';
 import { 
@@ -22,13 +22,13 @@ import {
   GraphRequest,
   GraphRequestManager,
 } from 'react-native-fbsdk-next';
+import { styles } from './style';
 import { useFonts } from 'expo-font';
 import { store } from '../../redux/store';
 import { Entypo } from '@expo/vector-icons';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { updateUserInfo, userInterface } from '../../redux/slices/usersSlice';
-import { styles } from './style';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -36,7 +36,12 @@ interface LoginInterface {
   navigation?: StackNavigationProp<any>
 }
 
+
 const Login: FC<LoginInterface> = ({ navigation }) => {
+
+  const [error, setError] = useState(false);
+  const [message, setMessage] = useState('');
+
   //font section
   const [fontsLoaded] = useFonts({
     'bad-script': require('../../../assets/fonts/BadScript-Regular.ttf'),
@@ -58,13 +63,13 @@ const Login: FC<LoginInterface> = ({ navigation }) => {
 
   const login = async () => {
     try {
+      setError(false);
       const response = await LoginManager.logInWithPermissions(["public_profile"]);
       if(response.isCancelled) {
-        console.log("Login Cancelled");
+        setError(true);
+        setMessage('Login Cancelled');
         return;
       }
-      console.log("Permission granted!", response.grantedPermissions?.toString());
-
       const result = await AccessToken.getCurrentAccessToken();
 
       if(result) {
@@ -72,7 +77,8 @@ const Login: FC<LoginInterface> = ({ navigation }) => {
         getInformationFromToken(accessToken);
       }
     } catch (error) {
-      console.log("ERROR No Login", error);
+      setError(true);
+      setMessage(`Error: ${error}`);
     }
   }
 
@@ -90,22 +96,23 @@ const Login: FC<LoginInterface> = ({ navigation }) => {
       },
       async (error, result): Promise<GraphRequest | undefined> => {
         if(error) {
-          console.log('Login info has an error');
+          setError(true);
+          setMessage('Login info has an error');
           return;
         }
         if(result?.isCancelled) {
-          console.log("Login Cancelled");
+          setError(true);
+          setMessage('Login Cancelled');
           return;
         }
         if(result?.email === undefined) {
-          console.log("Error: email access is needed");
+          setError(true);
+          setMessage('Error: email access is needed');
           return;
         }
         
-        console.log("CALLBACK:", result);
         const users = await AsyncStorage.getItem('@users');
         const response = await Profile.getCurrentProfile();
-        console.log(response, "RESPONSE");
         const imageUrl = response?.imageURL;
         const userInfo:userInterface = {
           id: result.id,
@@ -116,7 +123,6 @@ const Login: FC<LoginInterface> = ({ navigation }) => {
         if(navigation) {
         if(!users) {
           // The first ever register
-          console.log("new user");
           navigation.navigate('Signup', userInfo);
         }else {
           const userExist = checkUser(users, result.id);
@@ -126,7 +132,6 @@ const Login: FC<LoginInterface> = ({ navigation }) => {
           :
             await AsyncStorage.setItem('@currentUser', JSON.stringify(userInfo));
             store.dispatch(updateUserInfo(userInfo));
-            console.log("LOG IN!");
           }
         }
       }
@@ -159,6 +164,8 @@ const Login: FC<LoginInterface> = ({ navigation }) => {
             styleContainer={[styles.btn]}
             styleText={[styles.btnText]}
           />
+
+          <ErrorMessage error={error} message={message} />
         </View>
       </SafeAreaView>
     </ScrollView>

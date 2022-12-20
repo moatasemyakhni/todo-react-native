@@ -1,10 +1,10 @@
 import 'expo-dev-client';
 import Button from '../../components/Button';
+import * as SecureStore from 'expo-secure-store';
 import * as SplashScreen from 'expo-splash-screen';
 import EmptyState from '../../components/EmptyState';
 import React, { useCallback, FC, useState } from 'react';
 import ErrorMessage from '../../components/ErrorMessage';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { 
   Text, 
@@ -111,7 +111,7 @@ const Login: FC<LoginInterface> = ({ navigation }) => {
           return;
         }
         
-        const users = await AsyncStorage.getItem('@users');
+        const users = await SecureStore.getItemAsync('@users');
         const response = await Profile.getCurrentProfile();
         const imageUrl = response?.imageURL;
         const userInfo:userInterface = {
@@ -130,7 +130,7 @@ const Login: FC<LoginInterface> = ({ navigation }) => {
 
             navigation.navigate('Signup', userInfo)
           :
-            await AsyncStorage.setItem('@currentUser', JSON.stringify(userInfo));
+            await SecureStore.setItemAsync('@currentUser', JSON.stringify(userInfo));
             store.dispatch(updateUserInfo(userInfo));
           }
         }

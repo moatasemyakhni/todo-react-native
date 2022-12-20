@@ -1,10 +1,10 @@
 import Button from '../../components/Button';
 import React, {useState, useEffect} from 'react';
 import * as ImagePicker from 'expo-image-picker';
+import * as SecureStore from 'expo-secure-store';
 import * as MediaLibrary from 'expo-media-library';
 import ErrorMessage from '../../components/ErrorMessage';
 import DateTimePicker  from '@react-native-community/datetimepicker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { 
   View, 
@@ -128,9 +128,9 @@ const Signup = ({route}) => {
     // update list
     store.dispatch(addUserToUsersList(userInfo));
     // set updated list as the new list in storage
-    await AsyncStorage.setItem('@users', JSON.stringify(users));
+    await SecureStore.setItemAsync('@users', JSON.stringify(users));
     
-    await AsyncStorage.setItem('@currentUser', JSON.stringify(userInfo));
+    await SecureStore.setItemAsync('@currentUser', JSON.stringify(userInfo));
     store.dispatch(updateUserInfo(userInfo));
   }
   return (

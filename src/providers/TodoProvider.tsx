@@ -1,6 +1,8 @@
 import React from 'react';
+import TodoContext from '../context/TodoContextAPI';
+
 import { useReducer } from 'react';
-import TodoContext, { todosSliceInterface, initialState } from '../context/TodoContextAPI';
+import { todosSliceInterface, initialState } from '../context/TodoContextAPI';
 
 const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     //useReducer to manage the state

@@ -1,18 +1,18 @@
 import React from 'react';
 import Card from '../../components/Card';
 import TodoModal from '../../components/TodoModal';
+import TodoContextAPI from '../../context/TodoContextAPI';
 
 import { styles } from './style';
+import { useContext } from 'react';
 import { FlatList } from 'react-native';
-import { useSelector } from 'react-redux';
 import { View, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
-import { RootState, store } from '../../redux/store';
-import { todoInterface, updateTodos } from '../../redux/slices/todosSlice';
+import { todoInterface } from '../../context/TodoContextAPI';
 
 
 const Todo = () => {
-  const { todos } = useSelector((state: RootState) => state.todos);
+  const [{ todos }, dispatch] = useContext(TodoContextAPI);
   const [modalVisible, setModalVisible] = useState(false);
   //props of modal
   const [title, setTitle] = useState('');
@@ -36,7 +36,7 @@ const Todo = () => {
         .then((response) => response.json())
         .then((data) => {
           const response: Array<todoInterface> = data.todos;
-          store.dispatch(updateTodos(response));
+          dispatch({todos: response});
         })
         .catch(err => Alert.alert(err));
     }

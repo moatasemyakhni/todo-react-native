@@ -1,10 +1,12 @@
 import 'expo-dev-client';
+
+import React from 'react';
 import Button from '../../components/Button';
 import * as SecureStore from 'expo-secure-store';
 import * as SplashScreen from 'expo-splash-screen';
 import EmptyState from '../../components/EmptyState';
-import React, { useCallback, FC, useState } from 'react';
 import ErrorMessage from '../../components/ErrorMessage';
+import UserContextAPI from '../../context/UserContextAPI';
 
 import { 
   Text, 
@@ -24,11 +26,11 @@ import {
 } from 'react-native-fbsdk-next';
 import { styles } from './style';
 import { useFonts } from 'expo-font';
-import { store } from '../../redux/store';
 import { Entypo } from '@expo/vector-icons';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { updateUserInfo, userInterface } from '../../redux/slices/usersSlice';
+import { userInterface } from '../../redux/slices/usersSlice';
+import { useCallback, FC, useState, useContext } from 'react';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -39,6 +41,7 @@ interface LoginInterface {
 
 const Login: FC<LoginInterface> = ({ navigation }) => {
 
+  const [_, dispatch] = useContext(UserContextAPI);
   const [error, setError] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -110,8 +113,8 @@ const Login: FC<LoginInterface> = ({ navigation }) => {
           setMessage('Error: email access is needed');
           return;
         }
-        
-        const users = await SecureStore.getItemAsync('@users');
+
+        const users = await SecureStore.getItemAsync('users');
         const response = await Profile.getCurrentProfile();
         const imageUrl = response?.imageURL;
         const userInfo:userInterface = {
@@ -130,8 +133,11 @@ const Login: FC<LoginInterface> = ({ navigation }) => {
 
             navigation.navigate('Signup', userInfo)
           :
-            await SecureStore.setItemAsync('@currentUser', JSON.stringify(userInfo));
-            store.dispatch(updateUserInfo(userInfo));
+            await SecureStore.setItemAsync('currentUser', JSON.stringify(userInfo));
+            dispatch({
+              type: 'UPDATE_USER_INFO',
+              payload: userInfo
+            });            
           }
         }
       }

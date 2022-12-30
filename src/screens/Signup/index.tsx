@@ -15,9 +15,6 @@ import {
   ScrollView, 
   TouchableOpacity, 
 } from 'react-native';
-import { 
-  userInterface, 
-} from '../../redux/slices/usersSlice';
 import { styles } from './style';
 import { Platform } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -25,6 +22,7 @@ import { KeyboardAvoidingView } from 'react-native';
 import {useState, useEffect, useContext} from 'react';
 import { ImagePickerOptions } from 'expo-image-picker';
 import { matureDate } from '../../constants/utilities';
+import { UserInterface } from '../../context/UserContextAPI';
 
 
 const Signup = ({route}) => {
@@ -118,7 +116,7 @@ const Signup = ({route}) => {
       setMessage('Profile is required');
       return;
     }
-    const userInfo:userInterface = {
+    const userInfo:UserInterface = {
       id: id,
       name: fullName,
       birthday: userBirthday,

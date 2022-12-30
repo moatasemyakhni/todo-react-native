@@ -27,9 +27,9 @@ import {
 import { styles } from './style';
 import { useFonts } from 'expo-font';
 import { Entypo } from '@expo/vector-icons';
+import { UserInterface } from '../../context/UserContextAPI';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { userInterface } from '../../redux/slices/usersSlice';
 import { useCallback, FC, useState, useContext } from 'react';
 
 SplashScreen.preventAutoHideAsync();
@@ -117,7 +117,7 @@ const Login: FC<LoginInterface> = ({ navigation }) => {
         const users = await SecureStore.getItemAsync('users');
         const response = await Profile.getCurrentProfile();
         const imageUrl = response?.imageURL;
-        const userInfo:userInterface = {
+        const userInfo:UserInterface = {
           id: result.id,
           name: result.name,
           birthday: result.birthday,
@@ -147,7 +147,7 @@ const Login: FC<LoginInterface> = ({ navigation }) => {
 
   const checkUser = (users: string, userId: string | unknown) => {
     const allUsers = JSON.parse(users);
-    const findUser = allUsers.filter((user: userInterface) => user.id === userId);
+    const findUser = allUsers.filter((user: UserInterface) => user.id === userId);
     return findUser.length !== 0;
   }
 

@@ -1,9 +1,10 @@
+import React from 'react';
 import Button from '../../components/Button';
-import React, {useState, useEffect} from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import * as SecureStore from 'expo-secure-store';
 import * as MediaLibrary from 'expo-media-library';
 import ErrorMessage from '../../components/ErrorMessage';
+import UserContextAPI from '../../context/UserContextAPI';
 import DateTimePicker  from '@react-native-community/datetimepicker';
 
 import { 
@@ -15,16 +16,13 @@ import {
   TouchableOpacity, 
 } from 'react-native';
 import { 
-  userInterface,
-  updateUserInfo, 
-  addUserToUsersList, 
+  userInterface, 
 } from '../../redux/slices/usersSlice';
 import { styles } from './style';
 import { Platform } from 'react-native';
-import { useSelector } from 'react-redux';
 import { MaterialIcons } from '@expo/vector-icons';
 import { KeyboardAvoidingView } from 'react-native';
-import { RootState, store } from '../../redux/store';
+import {useState, useEffect, useContext} from 'react';
 import { ImagePickerOptions } from 'expo-image-picker';
 import { matureDate } from '../../constants/utilities';
 
@@ -45,7 +43,7 @@ const Signup = ({route}) => {
   const [error, setError] = useState(false);
   const [message, setMessage] = useState('');
 
-  const { users } = useSelector((state: RootState) => state.user);
+  const [{users}, dispatch] = useContext(UserContextAPI);
 
 
   useEffect(() => {
@@ -103,6 +101,7 @@ const Signup = ({route}) => {
     }
   }
 
+  const [user] = useContext(UserContextAPI);
   const signup = async () => {
     if(!fullName) {
       setError(true);
@@ -126,13 +125,22 @@ const Signup = ({route}) => {
       imageURL: userImageURL,
     };
     // update list
-    store.dispatch(addUserToUsersList(userInfo));
-    // set updated list as the new list in storage
-    await SecureStore.setItemAsync('@users', JSON.stringify(users));
+    dispatch({
+      type: 'ADD_USER_TO_USERS_LIST',
+      payload: userInfo
+    });
     
-    await SecureStore.setItemAsync('@currentUser', JSON.stringify(userInfo));
-    store.dispatch(updateUserInfo(userInfo));
+    // set updated list as the new list in storage
+    await SecureStore.setItemAsync('users', JSON.stringify(users));
+    
+    await SecureStore.setItemAsync('currentUser', JSON.stringify(userInfo));
+    
+    dispatch({
+      type: 'UPDATE_USER_INFO',
+      payload: userInfo
+    })
   }
+
   return (
     <View style={styles.container}>
       <KeyboardAvoidingView

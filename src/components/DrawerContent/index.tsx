@@ -1,21 +1,22 @@
 import React from 'react';
 import Button from '../Button';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
+import UserContextAPI from '../../context/UserContextAPI';
 
 import { styles } from './style';
-import { useSelector } from 'react-redux';
+import { useContext } from 'react';
 import { View, Text, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
-import { RootState, store } from '../../redux/store';
-import { deleteUser } from '../../redux/slices/usersSlice';
 
 const DrawerContent = () => {
-    const { currentUser } = useSelector((state: RootState) => state.user);
+    const [{ currentUser }, dispatch] = useContext(UserContextAPI);
 
     const signout = async () => {
-        store.dispatch(deleteUser());
-        await AsyncStorage.removeItem('@currentUser');
+        dispatch({
+            type: 'DELETE_USER'
+        });
+        await SecureStore.deleteItemAsync('currentUser');
     }
   return (
     <View style={styles.container}>

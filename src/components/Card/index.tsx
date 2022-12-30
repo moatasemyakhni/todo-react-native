@@ -1,10 +1,11 @@
-import React, { FC } from 'react';
+import React from 'react';
 
+import { FC } from 'react'
 import { styles } from './style';
 import { Text } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import { GestureResponderEvent } from 'react-native';
-import { todoInterface } from '../../redux/slices/todosSlice';
+import { todoInterface } from '../../context/TodoContextAPI';
 
 interface CardInterface {
     title?: string,
